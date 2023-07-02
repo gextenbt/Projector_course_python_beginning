@@ -147,7 +147,7 @@ Write a script that:
         
 def sort_csv_file(filename: str):
     def get_score(player):
-        return player['Score']
+        return int(player['Score'])
 
     with open(filename, mode='r') as input_file, \
          open('highest_score.csv', mode='w', newline="") as output_file:
@@ -155,16 +155,18 @@ def sort_csv_file(filename: str):
         reader = csv.DictReader(input_file)
         sorted_reader = sorted(reader, key=get_score, reverse=True)
 
-        headers = ['Player name', 'Score']
+        headers = ['Player name', 'Highest score']
         writer = csv.DictWriter(output_file, fieldnames=headers)
         writer.writeheader()
-        writer.writerows(sorted_reader)
+        for i in range(len(sorted_reader)):
+            writer.writerow({'Player name': sorted_reader[i]['Player name'], 
+                             'Highest score': sorted_reader[i]['Score']})
 
 
 
 if __name__ == "__main__":
-    create_ascii_num_files_and_summary()
-    copy_paste_content()
+    # create_ascii_num_files_and_summary()
+    # copy_paste_content()
     player_genscore()
     # player_genscore_2()
     sort_csv_file('players_score.csv')
