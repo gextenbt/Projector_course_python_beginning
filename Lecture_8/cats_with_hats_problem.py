@@ -26,8 +26,8 @@ Optional: Make a function that can calculate hats with any amount of rounds and 
 
 """
 Complexity:
-- Time: O(n)
-- Space: O(n)
+- Time: O(1)
+- Space: O(1)
 """
 
 def hundred_cats_with_hats():
