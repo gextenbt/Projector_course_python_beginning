@@ -67,5 +67,9 @@ if __name__ == "__main__":
 
 
 # Useful links
-# # Code Example - https://developers.giphy.com/docs/resource/#code-examples
-# # API Explorer - to test API on website - https://developers.giphy.com/explorer/
+"""
+Giphy
+- Code Example - https://developers.giphy.com/docs/resource/#code-examples
+- API Explorer - to test API on website - https://developers.giphy.com/explorer/
+"""
+
