@@ -1,13 +1,16 @@
 import requests
-import auth_variables
 import telebot
+import dotenv
+import os
+dotenv.load_dotenv()
 
 
 # Giphy
 giphy_url = "http://api.giphy.com/v1/{type}"  # https://developers.giphy.com/docs/api/endpoint
-giphy_token = auth_variables.giphy_token  # https://developers.giphy.com/dashboard/
+giphy_token = os.getenv("GIPHY_TOKEN")  # https://developers.giphy.com/dashboard/
 # Telegram
-telegram_token = auth_variables.telegram_token  
+telegram_token = os.getenv("TELEGRAM_TOKEN") 
+
 
 def return_gif_link(prompt):
     limit = 1
@@ -23,10 +26,13 @@ def return_gif_link(prompt):
     # print(resp.text)
     resp_data = resp.json()["data"]
     
-    if resp_data:
-        return resp_data[limit-1]["images"]["original"]["url"]
+    if resp.status_code == 200:
+        if resp_data:
+            return resp_data[limit-1]["images"]["original"]["url"]
+        elif not resp_data:
+            raise Exception("Image is not found")
     else:
-        return False
+        raise Exception(f"Failed to retrieve GIF from Giphy. Status code: {str(resp.status_code)}")
 
 def telegram_bot(telegram_token):
 
@@ -43,33 +49,25 @@ def telegram_bot(telegram_token):
     def send_text(message):
         try:
             gif_link = return_gif_link(message.text)
-            if gif_link:
-                bot.send_document(message.chat.id, gif_link)
-                bot.send_message(
-                    message.chat.id,
-                    "The image is found!")
-            elif not gif_link:
-                bot.send_message(
-                    message.chat.id,
-                    "The image is not found")                             
-        except Exception as ex:
-            print(ex)
+            bot.send_document(message.chat.id, gif_link)
             bot.send_message(
                 message.chat.id,
-                "Something went wrong")
-
+                "The image is found!")                           
+        except Exception as ex:
+            bot.send_message(
+                message.chat.id,
+                ex
+                )
+        
     bot.polling()
 
 
 if __name__ == "__main__":
-    # print(return_gif_link("snake"))
+    # pass
+    # print(return_gif_link(""))
     telegram_bot(telegram_token)
 
 
 # Useful links
-"""
-Giphy
-- Code Example - https://developers.giphy.com/docs/resource/#code-examples
-- API Explorer - to test API on website - https://developers.giphy.com/explorer/
-"""
-
+# # Code Example - https://developers.giphy.com/docs/resource/#code-examples
+# # API Explorer - to test API on website - https://developers.giphy.com/explorer/
