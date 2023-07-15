@@ -165,8 +165,8 @@ def rate_limiter(max_calls, interval):
 
     def decorator(func):
         func_count = 0
-        get_time = time.time()
-        inter_end_time = get_time + interval
+        inter_end_time = time.time() + interval 
+        print(inter_end_time)
 
         def wrapper(*args, **kwargs):
             nonlocal func_count, inter_end_time
@@ -174,9 +174,10 @@ def rate_limiter(max_calls, interval):
             if get_time > inter_end_time:
                 print("Interval refreshed")
                 func_count = 0
-                inter_end_time += interval
+                inter_end_time = get_time + interval
 
             if func_count >= max_calls:
+                time.sleep(0.3)
                 raise Exception(f"Rate limit exceeded. Maximum {max_calls} calls allowed within {interval} seconds.")
             
             func_count += 1
@@ -187,20 +188,20 @@ def rate_limiter(max_calls, interval):
     return decorator
 
 
-@rate_limiter(max_calls=3, interval=3.01)
-def my_function():
+@rate_limiter(max_calls=3, interval=10)
+def my_function(s: str = "Hello, rate-limited world!"):
     time.sleep(1)
-    print("Hello, rate-limited world!")
+    print(s)
     print("-----")
 
 
 
 ###
 # Test the rate-limited function
-def test_my_function(func):
+def test_my_function(func, s):
     for i in range(100):
         try:
-            func()
+            func(s)
         except Exception as ex:
             print(ex)
 ###          
@@ -229,6 +230,9 @@ if __name__ == "__main__":
     # print(fibonacci(100))
 
     # Task 5
-    test_my_function(my_function)
+    test_my_function(my_function, s="snake")
+    # time.sleep(20)
+    # test_my_function(my_function, s="snake")
+    
 
 
