@@ -13,22 +13,21 @@ customer_receipt = {"receipt_id": 123456,
 
 
 def is_admin(func):
-    def wrapper(*args, **kwargs):
-        try:
-            user_type = kwargs.get('user_type')
-            if user_type == 'admin':    
-                return func(*args, **kwargs)
-            else:
-                raise ValueError("Permission denied")
-        except ValueError as ve:
-            print(f"ValueError occurred: {ve}")
-          
+    def wrapper(*args, **kwargs):   
+        user_type = kwargs.get('user_type')
+        if user_type == 'admin':    
+            return func(*args, **kwargs)
+        else:
+            raise ValueError("Permission denied")
+
     return wrapper
 
+####
 # Test block
 @is_admin
 def show_customer_receipt(user_type: str):
     return print(customer_receipt)
+####
 
 
 # 2
@@ -104,6 +103,47 @@ def add(a: "int", b: "int") -> "str":
 
 ############################################
 
+
+# Task 3 - More clear solution
+
+def validate_types(func):
+    def wrapper(*args, **kwargs):
+        # Validate function arguments
+        for arg_name, arg_value in zip(func.__code__.co_varnames, args):
+            if arg_name in func.__annotations__:
+                expected_type = eval(func.__annotations__[arg_name])
+                if not isinstance(arg_value, expected_type):
+                    raise TypeError(f"Invalid type for argument '{arg_name}'. Expected '{expected_type.__name__}', got '{type(arg_value).__name__}'")
+
+        # Validate keyword arguments
+        for arg_name, arg_value in kwargs.items():
+            if arg_name in func.__annotations__:
+                expected_type = eval(func.__annotations__[arg_name])
+                if not isinstance(arg_value, expected_type):
+                    raise TypeError(f"Invalid type for argument '{arg_name}'. Expected '{expected_type.__name__}', got '{type(arg_value).__name__}'")
+
+        # Call the original function
+        result = func(*args, **kwargs)
+
+        # Validate the return type
+        if 'return' in func.__annotations__:
+            expected_type = eval(func.__annotations__['return'])
+            if not isinstance(result, expected_type):
+                raise TypeError(f"Invalid return type for result '{result}'. Expected '{expected_type.__name__}', got '{type(result).__name__}'")
+
+        return result
+
+    return wrapper
+
+
+############################################
+# Test block
+@validate_types
+def multiply(a: "int", b: "int") -> "str":
+    return a * b
+
+############################################
+
 # 4
 
 """
@@ -166,7 +206,6 @@ def rate_limiter(max_calls, interval):
     def decorator(func):
         func_count = 0
         inter_end_time = time.time() + interval 
-        print(inter_end_time)
 
         def wrapper(*args, **kwargs):
             nonlocal func_count, inter_end_time
@@ -212,11 +251,16 @@ def test_my_function(func, s):
 
 
 if __name__ == "__main__":
-    pass
+    # pass
     # Task 1
-    # show_customer_receipt('user', customer_receipt)
-    # show_customer_receipt(user_type='user')  # Raises ValueError: Permission denied
-    # show_customer_receipt(user_type='admin') 
+    try:
+        pass
+        # show_customer_receipt('user', customer_receipt)
+        # show_customer_receipt(user_type='user')  # Raises ValueError: Permission denied
+        # show_customer_receipt(user_type='admin') 
+    except ValueError as ve:
+        print(ve)
+    
 
     # Task 2
     # print(some_function_with_risky_operation({'foo': 'bar'}))
@@ -226,11 +270,19 @@ if __name__ == "__main__":
     # print(add(1, 2))  # TypeError: Result ' 3 ' must be 'str', not 'int'
     # print(add("1", "2"))  # TypeError: Argument 'a' must be 'int', not 'str'
 
+    # Task 3 - Updated solution
+    try:
+        # pass
+        print(multiply(1, 2))  # TypeError: Result ' 3 ' must be 'str', not 'int'
+        print(multiply("1", "2"))  # TypeError: Argument 'a' must be 'int', not 'str'
+    except TypeError as te:
+        print(te)
+
     # Task 4
     # print(fibonacci(100))
 
     # Task 5
-    test_my_function(my_function, s="snake")
+    # test_my_function(my_function, s="snake")
     # time.sleep(20)
     # test_my_function(my_function, s="snake")
     
