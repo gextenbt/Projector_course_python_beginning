@@ -1,5 +1,5 @@
 
-```Mermaid
+```mermaid
 erDiagram
     user {
         User_ID int PK
@@ -71,5 +71,4 @@ erDiagram
     room ||--o| review:"Has"
     room ||--o| reservation:"Has"
     host ||--o| review:"Has"
-
 ```
