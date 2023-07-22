@@ -37,7 +37,7 @@ You also can use any graphic tool that you might use to create data model. For e
 
 
 
-``` mermaid
+```mermaid
 erDiagram
     user {
         User_ID int PK
@@ -122,4 +122,4 @@ erDiagram
     room ||--o| reservation:"Has"
     room ||--o| room_items:"Has"
     host ||--o| review:"Has"
-	```
+```
